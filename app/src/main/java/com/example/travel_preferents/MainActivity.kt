@@ -39,6 +39,10 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.graphics.vector.ImageVector
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+
 
 
 
@@ -52,7 +56,9 @@ data class City(
     val bestTime: String,
     val hours: String,
     val highlights: List<String>,
-    val photos: List<Int> //
+    val photos: List<Int>,
+    val videoUrl: String,
+    val webUrl: String
 )
 
 // --- SAMPLE DATA
@@ -66,7 +72,9 @@ fun sampleCities() = listOf(
         bestTime = "Mayo - Septiembre",
         hours = "24/7 para la ciudad, atracciones varían",
         highlights = listOf("Sagrada Família", "Park Güell", "Las Ramblas", "Gothic Quarter", "Camp Nou"),
-        photos = listOf(R.drawable.barcelona1, R.drawable.barcelona2)
+        photos = listOf(R.drawable.barcelona1, R.drawable.barcelona2),
+        videoUrl = "https://www.youtube.com/watch?v=0cHbqAIw4zc",
+        webUrl = "https://www.bcn.travel/es/"
     ),
     City(
         id = "paris",
@@ -77,7 +85,9 @@ fun sampleCities() = listOf(
         bestTime = "Abril - Junio / Septiembre - Octubre",
         hours = "Atracciones con horarios variables",
         highlights = listOf("Torre Eiffel", "Louvre", "Montmartre"),
-        photos = listOf(R.drawable.paris1, R.drawable.paris2)
+        photos = listOf(R.drawable.paris1, R.drawable.paris2),
+        videoUrl = "https://www.youtube.com/watch?v=REDVbTQxMXo",
+        webUrl = "https://www.paris.es/"
     ),
     City(
         id = "roma",
@@ -88,7 +98,9 @@ fun sampleCities() = listOf(
         bestTime = "Abril - Junio / Septiembre - Octubre",
         hours = "Atracciones mayormente con horario fijo",
         highlights = listOf("Coliseo", "Vaticano", "Foro Romano"),
-        photos = listOf(R.drawable.roma1, R.drawable.roma2)
+        photos = listOf(R.drawable.roma1, R.drawable.roma2),
+        videoUrl = "https://www.youtube.com/watch?v=2KvxXLgS7gQ",
+        webUrl = "https://www.romatravelagents.com/"
     ),
     City(
         id = "tokio",
@@ -99,7 +111,9 @@ fun sampleCities() = listOf(
         bestTime = "Marzo - Mayo / Octubre - Noviembre",
         hours = "Atracciones con horarios variables",
         highlights = listOf("Shibuya", "Asakusa", "Templos"),
-        photos = listOf(R.drawable.tokio1, R.drawable.tokio2)
+        photos = listOf(R.drawable.tokio1, R.drawable.tokio2),
+        videoUrl = "https://www.youtube.com/watch?v=X2aY-HgWjzg",
+        webUrl = "https://www.yoitabitravel.com/"
     )
 )
 
@@ -291,10 +305,13 @@ fun NavHostContainer(navController: NavHostController, modifier: Modifier = Modi
         }
         composable("city/{cityId}/video") { back ->
             val cityId = back.arguments?.getString("cityId") ?: cities.first().id
-            GenericInfoScreen(title = "Video", text = "Videos relacionados")
+            val city = cities.first { it.id == cityId }
+            VideoScreen(city = city)
         }
         composable("city/{cityId}/web") { back ->
-            GenericInfoScreen(title = "Web", text = "Enlaces y web oficial")
+            val cityId = back.arguments?.getString("cityId") ?: cities.first().id
+            val city = cities.first { it.id == cityId }
+            WebScreen(city = city)
         }
     }
 }
@@ -480,6 +497,60 @@ fun PhotoScreen(city: City) {
                         .height(200.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun VideoScreen(city: City) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Video de ${city.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(city.videoUrl))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)   // ✅ usamos el context guardado
+        }) {
+            Icon(Icons.Default.PlayArrow, contentDescription = "Ver Video")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Reproducir en YouTube")
+        }
+    }
+}
+
+@Composable
+fun WebScreen(city: City) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Web de ${city.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(onClick = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(city.webUrl))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }) {
+            Icon(Icons.Default.Public, contentDescription = "Abrir Web")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Visitar página oficial")
         }
     }
 }
