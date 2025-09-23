@@ -51,7 +51,8 @@ data class City(
     val description: String,
     val bestTime: String,
     val hours: String,
-    val highlights: List<String>
+    val highlights: List<String>,
+    val photos: List<Int> //
 )
 
 // --- SAMPLE DATA
@@ -64,7 +65,8 @@ fun sampleCities() = listOf(
         description = "Una vibrante ciudad mediterránea conocida por su arquitectura única de Gaudí, deliciosa gastronomía y rica cultura catalana.",
         bestTime = "Mayo - Septiembre",
         hours = "24/7 para la ciudad, atracciones varían",
-        highlights = listOf("Sagrada Família", "Park Güell", "Las Ramblas", "Gothic Quarter", "Camp Nou")
+        highlights = listOf("Sagrada Família", "Park Güell", "Las Ramblas", "Gothic Quarter", "Camp Nou"),
+        photos = listOf(R.drawable.barcelona1, R.drawable.barcelona2)
     ),
     City(
         id = "paris",
@@ -74,7 +76,8 @@ fun sampleCities() = listOf(
         description = "La ciudad de la luz: Eiffel, Louvre y paseos por el Sena.",
         bestTime = "Abril - Junio / Septiembre - Octubre",
         hours = "Atracciones con horarios variables",
-        highlights = listOf("Torre Eiffel", "Louvre", "Montmartre")
+        highlights = listOf("Torre Eiffel", "Louvre", "Montmartre"),
+        photos = listOf(R.drawable.paris1, R.drawable.paris2)
     ),
     City(
         id = "roma",
@@ -84,7 +87,8 @@ fun sampleCities() = listOf(
         description = "Historia, Colosseum, Vaticano y excelente comida italiana.",
         bestTime = "Abril - Junio / Septiembre - Octubre",
         hours = "Atracciones mayormente con horario fijo",
-        highlights = listOf("Coliseo", "Vaticano", "Foro Romano")
+        highlights = listOf("Coliseo", "Vaticano", "Foro Romano"),
+        photos = listOf(R.drawable.roma1, R.drawable.roma2)
     ),
     City(
         id = "tokio",
@@ -94,7 +98,8 @@ fun sampleCities() = listOf(
         description = "Una mezcla de modernidad y tradición: templos, tecnología y gastronomía.",
         bestTime = "Marzo - Mayo / Octubre - Noviembre",
         hours = "Atracciones con horarios variables",
-        highlights = listOf("Shibuya", "Asakusa", "Templos")
+        highlights = listOf("Shibuya", "Asakusa", "Templos"),
+        photos = listOf(R.drawable.tokio1, R.drawable.tokio2)
     )
 )
 
@@ -282,7 +287,7 @@ fun NavHostContainer(navController: NavHostController, modifier: Modifier = Modi
         composable("city/{cityId}/photos") { back ->
             val cityId = back.arguments?.getString("cityId") ?: cities.first().id
             val city = cities.first { it.id == cityId }
-            GenericInfoScreen(title = "${city.name} - Fotos", text = "Galería de fotos de ${city.name} (ejemplo).")
+            PhotoScreen(city = city)
         }
         composable("city/{cityId}/video") { back ->
             val cityId = back.arguments?.getString("cityId") ?: cities.first().id
@@ -450,4 +455,31 @@ fun HighlightCard(title: String, items: List<String>) {
 @Composable
 fun PreviewCity() {
     CityScreen(sampleCities().first())
+}
+
+@Composable
+fun PhotoScreen(city: City) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(city.photos) { photo ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Image(
+                    painter = painterResource(photo),
+                    contentDescription = "${city.name} photo",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            }
+        }
+    }
 }
