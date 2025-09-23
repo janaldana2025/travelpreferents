@@ -121,26 +121,30 @@ fun TravelAppRoot() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerContent(
-                cities = cities,
-                currentCityId = currentCityId,
-                onCitySelected = { cityId ->
-                    currentCityId = cityId
-                    scope.launch { drawerState.close() }
-                    navController.navigate("city/$cityId") {
-                        launchSingleTop = true
+            ModalDrawerSheet(   // 👈 esto le da un fondo por defecto (Material3)
+                drawerContainerColor = MaterialTheme.colorScheme.surface, // puedes poner Color.White si prefieres
+                drawerContentColor = MaterialTheme.colorScheme.onSurface
+            ) {
+                DrawerContent(
+                    cities = cities,
+                    currentCityId = currentCityId,
+                    onCitySelected = { cityId ->
+                        currentCityId = cityId
+                        scope.launch { drawerState.close() }
+                        navController.navigate("city/$cityId") {
+                            launchSingleTop = true
+                        }
+                    },
+                    onInfoClick = { infoType ->
+                        scope.launch { drawerState.close() }
+                        navController.navigate("city/$currentCityId/$infoType") {
+                            launchSingleTop = true
+                        }
                     }
-                },
-                onInfoClick = { infoType ->
-                    // ejemplo: city/profile, city/photos ...
-                    scope.launch { drawerState.close() }
-                    navController.navigate("city/$currentCityId/$infoType") {
-                        launchSingleTop = true
-                    }
-                }
-            )
+                )
+            }
         }
-    ) {
+    ){
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
