@@ -317,19 +317,56 @@ fun NavHostContainer(navController: NavHostController, modifier: Modifier = Modi
 // --- SCREENS
 @Composable
 fun InicioScreen() {
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.TopStart) {
-        Text(
-            text = "Bienvenido a Travel Preferents\n\n" +
-                    "Explora las ciudades más fascinantes del mundo, descubre sus atractivos turísticos, " +
-                    "la mejor época para visitarlas y accede a fotos, videos y páginas oficiales de cada destino. " +
-                    "Tu próxima aventura comienza aquí.",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Image(
+            painter = painterResource(id = R.drawable.viaje),
+            contentDescription = "Imagen de fondo",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color(0xAA000000)),
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
+                    )
+                )
+        )
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Bienvenido a Travel Preferents",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Explora las ciudades más fascinantes del mundo, descubre sus atractivos turísticos,la mejor época para visitarlas y accede a fotos, videos y páginas oficiales de cada destino.Tu próxima aventura comienza aquí.",
+                fontSize = 14.sp,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+        }
     }
 }
+
+
 
 @Composable
 fun CitiesListScreen(cities: List<City>, onCityClick: (String) -> Unit) {
