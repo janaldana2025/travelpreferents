@@ -37,11 +37,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 
-
-
+// Libraries to play YouTube videos
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 
 // --- DATA MODEL
@@ -196,7 +202,9 @@ fun DrawerContent(
     onCitySelected: (String) -> Unit,
     onInfoClick: (String) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         Text("Guía de Viajes", fontWeight = FontWeight.Bold, fontSize = 20.sp)
         Text("Descubre lugares increíbles", color = Color.Gray, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
 
@@ -214,7 +222,9 @@ fun DrawerContent(
                     Image(
                         painter = painterResource(city.imageRes),
                         contentDescription = city.name,
-                        modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -370,7 +380,9 @@ fun InicioScreen() {
 
 @Composable
 fun CitiesListScreen(cities: List<City>, onCityClick: (String) -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .padding(12.dp)) {
         items(cities) { city ->
             Card(
                 modifier = Modifier
@@ -380,7 +392,9 @@ fun CitiesListScreen(cities: List<City>, onCityClick: (String) -> Unit) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Image(painter = painterResource(city.imageRes), contentDescription = city.name, modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Crop)
+                    Image(painter = painterResource(city.imageRes), contentDescription = city.name, modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Crop)
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(city.name, fontWeight = FontWeight.Bold)
@@ -394,7 +408,9 @@ fun CitiesListScreen(cities: List<City>, onCityClick: (String) -> Unit) {
 
 @Composable
 fun GenericInfoScreen(title: String, text: String) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(12.dp))
         Text(text)
@@ -462,7 +478,9 @@ fun CityScreen(city: City) {
         }
 
         // Content
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
             InfoCard(title = "Acerca de ${city.name}", content = city.description, icon = Icons.Default.Info)
             InfoCard(title = "Horarios de Visita", content = city.hours, icon = Icons.Default.AccessTime)
             InfoCard(title = "Mejor Época", content = city.bestTime, icon = Icons.Default.CalendarToday)
@@ -473,7 +491,9 @@ fun CityScreen(city: City) {
 
 @Composable
 fun InfoCard(title: String, content: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(6.dp)) {
+    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(6.dp)) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
             Icon(icon, contentDescription = title, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(12.dp))
@@ -488,7 +508,9 @@ fun InfoCard(title: String, content: String, icon: androidx.compose.ui.graphics.
 
 @Composable
 fun HighlightCard(title: String, items: List<String>) {
-    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(6.dp)) {
+    Card(shape = RoundedCornerShape(12.dp), modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp), elevation = CardDefaults.cardElevation(6.dp)) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Star, contentDescription = "destacados")
@@ -500,7 +522,9 @@ fun HighlightCard(title: String, items: List<String>) {
             // simple wrapping: multiple rows if needed (2 per row)
             val chunked = items.chunked(3)
             chunked.forEach { row ->
-                Row(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp)) {
                     row.forEach { tag ->
                         Surface(shape = RoundedCornerShape(12.dp), tonalElevation = 1.dp, modifier = Modifier.padding(end = 8.dp)) {
                             Text(tag, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp))
@@ -547,7 +571,7 @@ fun PhotoScreen(city: City) {
 
 @Composable
 fun VideoScreen(city: City) {
-    val context = LocalContext.current
+    /*val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -569,7 +593,84 @@ fun VideoScreen(city: City) {
             Spacer(modifier = Modifier.width(8.dp))
             Text("Reproducir en YouTube")
         }
+    }*/
+
+    // Define variables
+    val videoId = remember(city.videoUrl) { extractYouTubeVideoId(city.videoUrl)}
+
+    // Define frame
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        // Add space
+        Spacer(modifier = Modifier.height(50.dp))
+
+        // Add video title
+        Text("Video de ${city.name}", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+        // Add space
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Check if videoId exists to show video player
+        if (videoId != null) {
+            // Add video player
+            YouTubePlayerCompose(
+                videoId = videoId,
+                modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f)
+            )
+        }
+        else {
+            // Add text with error
+            Text(
+                "Error: No se pudo obtener el ID del video en YouTube.",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
+}
+
+/**
+ * Component to show video player
+ * @param {String} videoId
+ * @param {Modifier} modifier
+ * @return {Composable}
+ */
+@Composable
+fun YouTubePlayerCompose(videoId: String, modifier: Modifier = Modifier) {
+    // Define variables
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Define android view
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            // Create view
+            YouTubePlayerView(context).apply {
+                // Add buttons on video player
+                lifecycleOwner.lifecycle.addObserver(this)
+
+                // Start video
+                addYouTubePlayerListener(object: AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        youTubePlayer.cueVideo(videoId, 0f)
+                    }
+                })
+            }
+        },
+        // Update video when it changes
+        update = { view ->
+            view.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                    youTubePlayer.cueVideo(videoId, 0f)
+                }
+            })
+        }
+    )
 }
 
 @Composable
@@ -597,4 +698,20 @@ fun WebScreen(city: City) {
             Text("Visitar página oficial")
         }
     }
+}
+
+
+/**
+ * Function to extract video id from video url
+ * @param {String} videoUrl
+ * @return {String} videoId
+ */
+fun extractYouTubeVideoId(videoUrl: String): String? {
+    // Define variables
+    val pattern = "(?<=watch\\?v=|/videos/|embed\\/|youtu\\.be\\/|\\/v\\/|watch\\?v%3D|%2Fvideos%2F|embed%2F|youtu\\.be%2F)([a-zA-Z0-9_-]{11})"
+    val compiledPattern = Regex(pattern)
+    val matcher = compiledPattern.find(videoUrl)
+
+    // Return videoId
+    return matcher?.value
 }
